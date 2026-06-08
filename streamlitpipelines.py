@@ -41,27 +41,15 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 #import pyautogui
 
-# Cargar el modelo de regresión
-regressor = load('Modelopipeline.joblib')
+import streamlit as st
+import pandas as pd
+import numpy as np
+from joblib import load
+import os
 
-# Cargar el encoder
-#with open('encoderpipeline.pickle', 'rb') as f:
-#    encoder = pickle.load(f)
-
-# Inicializar variables
-#rd_spend = administration = marketing_spend = 0.0
-#selected_state = "New York"
-
-# Streamlit app
-st.title("Modelo de Regresión")
-st.markdown("##### Si colocas un valor negativo, aparecerá un error y no podrás completar otros campos. La predicción será incorrecta.")
-
-# Sidebar para la entrada del usuario
-st.sidebar.header("Campos a Evaluar")
-
-# Configuración de la página
+# Configuración de la página DEBE ir al principio
 st.set_page_config(
-    page_title="Predictor de Monto Bruto en Salud -YARMAS MOSQUERA TRABAJO FINAL",
+    page_title="Predictor de Monto Bruto en Salud - YARMAS MOSQUERA TRABAJO FINAL",
     page_icon="🏥",
     layout="wide"
 )
@@ -92,26 +80,49 @@ GRUPO_CIE10_OPTIONS = [
     'TRASPLANTE DE PROGENITORES HEMATOPOYÉTICOS', 'TRASPLANTE RENAL', 'TRASPLANTE HEPÁTICO'
 ]
 
+# ==================== FUNCIÓN PARA CARGAR MODELO ====================
+@st.cache_resource
+def cargar_modelo():
+    """Carga el modelo desde el archivo joblib"""
+    try:
+        if os.path.exists('Modelopipeline.joblib'):
+            modelo = load('Modelopipeline.joblib')
+            return modelo
+        else:
+            st.error("❌ No se encuentra el archivo 'Modelopipeline.joblib'")
+            return None
+    except Exception as e:
+        st.error(f"❌ Error al cargar el modelo: {e}")
+        return None
 
-# ==================== INTERFAZ DE USUARIO ====================
+# ==================== FUNCIÓN PARA PREDECIR ====================
+def predecir_monto(modelo, edad, sexo, departamento, tipo_atencion, dias_atencion, grupo_cie10):
+    """Realiza la predicción del monto bruto"""
+    # Crear DataFrame con los datos de entrada
+    datos_entrada = pd.DataFrame([[
+        edad, sexo, departamento, tipo_atencion, dias_atencion, grupo_cie10
+    ]], columns=['edad', 'SEXO', 'DEPARTAMENTO_PAC', 'TIPO_ATENC', 'DIAS_ATENCIÓN', 'ATE_GRUPOCIE10'])
+    
+    # Realizar predicción usando .predict()
+    prediccion = modelo.predict(datos_entrada)
+    return prediccion[0]
+
+# ==================== CARGAR MODELO ====================
 st.title("🏥 Sistema de Predicción de Monto Bruto en Servicios de Salud - YARMAS MOSQUERA")
 st.markdown("---")
 
-# Cargar modelo
-#with st.spinner("Cargando modelo predictivo..."):
-#    modelo = cargar_modelo()
+# Cargar el modelo de regresión
+with st.spinner("Cargando modelo predictivo..."):
+    regressor = cargar_modelo()
 
-
-
+# ==================== INTERFAZ DE USUARIO ====================
 if regressor is not None:
     # Barra lateral con información
     with st.sidebar:
         st.header("ℹ️ Información del Modelo")
         st.markdown("""
         **Tipo de Modelo:** Regresión Lineal con Pipeline
-            
-  
-            
+        
         **Variables de entrada:**
         - 📊 Edad (numérica)
         - 👥 Sexo (categórica)
@@ -193,11 +204,12 @@ if regressor is not None:
             use_container_width=True
         )
     
-    if regressor:
+    # Realizar predicción cuando se presiona el botón
+    if predecir:
         with st.spinner("Calculando predicción..."):
             try:
-                # Realizar predicción
-                monto_predicho = regressor(
+                # ========== CORREGIDO: Llamar correctamente a la función ==========
+                monto_predicho = predecir_monto(
                     regressor, edad, sexo, departamento, 
                     tipo_atencion, dias_atencion, grupo_cie10
                 )
@@ -255,9 +267,6 @@ if regressor is not None:
                     })
                     st.dataframe(datos_resumen, use_container_width=True, hide_index=True)
                 
-                # Mostrar nota informativa
-                # st.info("💡 **Nota:** Esta predicción es una estimación basada en el modelo de regresión lineal. El monto real puede variar según otros factores no considerados en el modelo.")
-                
                 # Efecto visual
                 st.balloons()
                 
@@ -265,6 +274,14 @@ if regressor is not None:
                 st.error(f"❌ Error al realizar la predicción: {str(e)}")
                 st.info("Por favor, verifica que todos los datos sean correctos y que el modelo esté funcionando adecuadamente.")
 
+else:
+    st.error("❌ No se pudo cargar el modelo. Verifica que el archivo 'Modelopipeline.joblib' existe.")
+    st.info("""
+    **Posibles soluciones:**
+    1. Asegúrate de que el archivo 'Modelopipeline.joblib' esté en la misma carpeta que este script
+    2. Si no existe, ejecuta primero el script de entrenamiento para crearlo
+    3. Verifica que el archivo no esté dañado
+    """)
 # Colocar el botón "Resetear" debajo del botón "Predecir"
 #if st.sidebar.button("Resetear"):
     # Resetear inputs
