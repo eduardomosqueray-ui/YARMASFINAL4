@@ -49,8 +49,8 @@ regressor = load('Modelopipeline.joblib')
 #    encoder = pickle.load(f)
 
 # Inicializar variables
-rd_spend = administration = marketing_spend = 0.0
-selected_state = "New York"
+#rd_spend = administration = marketing_spend = 0.0
+#selected_state = "New York"
 
 # Streamlit app
 st.title("Modelo de Regresión")
@@ -61,7 +61,7 @@ st.sidebar.header("Campos a Evaluar")
 
 # Configuración de la página
 st.set_page_config(
-    page_title="Predictor de Monto Bruto en Salud",
+    page_title="Predictor de Monto Bruto en Salud -YARMAS MOSQUERA TRABAJO FINAL",
     page_icon="🏥",
     layout="wide"
 )
@@ -98,10 +98,12 @@ st.title("🏥 Sistema de Predicción de Monto Bruto en Servicios de Salud - YAR
 st.markdown("---")
 
 # Cargar modelo
-with st.spinner("Cargando modelo predictivo..."):
-    modelo = cargar_modelo()
+#with st.spinner("Cargando modelo predictivo..."):
+#    modelo = cargar_modelo()
 
-if modelo is not None:
+
+
+if regressor is not None:
     # Barra lateral con información
     with st.sidebar:
         st.header("ℹ️ Información del Modelo")
@@ -191,12 +193,12 @@ if modelo is not None:
             use_container_width=True
         )
     
-    if predecir:
+    if regressor:
         with st.spinner("Calculando predicción..."):
             try:
                 # Realizar predicción
-                monto_predicho = predecir_monto(
-                    modelo, edad, sexo, departamento, 
+                monto_predicho = regressor(
+                    regressor, edad, sexo, departamento, 
                     tipo_atencion, dias_atencion, grupo_cie10
                 )
                 
@@ -264,9 +266,9 @@ if modelo is not None:
                 st.info("Por favor, verifica que todos los datos sean correctos y que el modelo esté funcionando adecuadamente.")
 
 # Colocar el botón "Resetear" debajo del botón "Predecir"
-if st.sidebar.button("Resetear"):
+#if st.sidebar.button("Resetear"):
     # Resetear inputs
-    reset_inputs()
+  #  reset_inputs()
 
 #   R&D Spend	Administration	Marketing Spend  Ciudad  
 #	  142107.34  	91391.77	366168.42         Florida    ---->
