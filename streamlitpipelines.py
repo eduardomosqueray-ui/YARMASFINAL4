@@ -108,7 +108,7 @@ def predecir_monto(modelo, edad, sexo, departamento, tipo_atencion, dias_atencio
     return prediccion[0]
 
 # ==================== CARGAR MODELO ====================
-st.title("🏥 Sistema de Predicción de Monto Bruto en Servicios de Salud - YARMAS MOSQUERA")
+st.title("🏥 Sistema de Predicción de Gasto en Enfermedades de Alto Costo - YARMAS MOSQUERA")
 st.markdown("---")
 
 # Cargar el modelo de regresión
@@ -146,6 +146,8 @@ if regressor is not None:
     
     with col1:
         st.markdown("### 👤 Datos Personales")
+        
+
         
         edad = st.number_input(
             "**Edad** (en años)", 
