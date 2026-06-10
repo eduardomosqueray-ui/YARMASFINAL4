@@ -108,7 +108,7 @@ def predecir_monto(modelo, edad, sexo, departamento, tipo_atencion, dias_atencio
     return prediccion[0]
 
 # ==================== CARGAR MODELO ====================
-st.title("🏥 Sistema de Predicción de Gasto en Enfermedades de Alto Costo - YARMAS MOSQUERA")
+st.title("🏥 Sistema de Predicción de Gasto en Enfermedades de Alto Costo - YARMAS MOSQUERA - NEIRA MARINA ")
 st.markdown("---")
 
 # Cargar el modelo de regresión
@@ -121,7 +121,7 @@ if regressor is not None:
     with st.sidebar:
         st.header("ℹ️ Información del Modelo")
         st.markdown("""
-        **Tipo de Modelo:** Regresión Lineal con Pipeline
+        **Tipo de Modelo:** Regresión Lineal
         
         **Variables de entrada:**
         - 📊 Edad (numérica)
@@ -137,6 +137,7 @@ if regressor is not None:
         
         st.divider()
         st.caption("Desarrollado para el Examen Final de ML")
+        st.caption("Fuente:http://datos.susalud.gob.pe/dataset/fissal-prestaciones-2022")
     
     # Formulario principal
     st.subheader("📋 Ingrese los datos del paciente")
@@ -201,7 +202,7 @@ if regressor is not None:
     col_button, col_empty = st.columns([2, 3])
     with col_button:
         predecir = st.button(
-            "🔮 **PREDECIR MONTO BRUTO**", 
+            "🔮 **PREDECIR GASTO**", 
             type="primary", 
             use_container_width=True
         )
